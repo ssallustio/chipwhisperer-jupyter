@@ -1,0 +1,9 @@
+- file: landing-page
+  numbered: true
+
+
+- part: Differential Power Analysis
+  chapters:
+    - file: dpa_intro.md
+    - file: courses_sca101_SOLN_Lab 3_1 - Large Hamming Weight Swings-OPENADC-CWLITEARM.rst
+    - file: Lab 3_2 - Recovering Data from a Single Bit.ipynb

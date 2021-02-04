@@ -1,0 +1,4 @@
+title: "ChipWhisperer Book"
+logo: ../img/cwlite_plugged
+execute:
+  execute_notebooks: "off"

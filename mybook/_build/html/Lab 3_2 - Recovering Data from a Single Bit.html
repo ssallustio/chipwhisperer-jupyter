@@ -1,0 +1,760 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>3. Part 3, Topic 2: Recovering AES Key from a Single Bit of Data &#8212; ChipWhisperer Book</title>
+    
+  <link rel="stylesheet" href="_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="_static/sphinx-book-theme.40e2e510f6b7d1648584402491bb10fe.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    
+  <link rel="preload" as="script" href="_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="_static/togglebutton.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js"></script>
+    <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
+    <script >
+        const thebe_selector = ".thebe"
+        const thebe_selector_input = "pre"
+        const thebe_selector_output = ".output"
+    </script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="2. Part 3, Topic 1: Large Hamming Weight Swings (MAIN)" href="courses_sca101_SOLN_Lab 3_1 - Large Hamming Weight Swings-OPENADC-CWLITEARM.html" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+
+
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+<a class="navbar-brand text-wrap" href="index.html">
+  
+  
+  <h1 class="site-logo" id="site-title">ChipWhisperer Book</h1>
+  
+</a>
+</div><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+    <ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="landing-page.html">
+   MY TITLE
+  </a>
+ </li>
+</ul>
+<p class="caption collapsible-parent">
+ <span class="caption-text">
+  Differential Power Analysis
+ </span>
+</p>
+<ul class="current nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="dpa_intro.html">
+   1. Welcome to the DPA intro
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="courses_sca101_SOLN_Lab 3_1 - Large Hamming Weight Swings-OPENADC-CWLITEARM.html">
+   2. Part 3, Topic 1: Large Hamming Weight Swings (MAIN)
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   3. Part 3, Topic 2: Recovering AES Key from a Single Bit of Data
+  </a>
+ </li>
+</ul>
+
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="row topbar fixed-top container-xl">
+    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
+    </div>
+    <div class="col pl-2 topbar-main">
+        
+        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+            <i class="fas fa-bars"></i>
+            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-arrow-up"></i>
+        </button>
+        
+        
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="_sources/Lab 3_2 - Recovering Data from a Single Bit.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+        <!-- Source interaction buttons -->
+
+
+        <!-- Full screen (wrap in <a> to have style consistency -->
+        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+                title="Fullscreen mode"><i
+                    class="fas fa-expand"></i></button></a>
+
+        <!-- Launch buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
+    <div class="dropdown-buttons">
+        
+        <a class="binder-button" href="https://mybinder.org/v2/gh/executablebooks/jupyter-book/master?urlpath=tree/Lab 3_2 - Recovering Data from a Single Bit.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
+                data-placement="left"><img class="binder-button-logo"
+                    src="_static/images/logo_binder.svg"
+                    alt="Interact on binder">Binder</button></a>
+        
+        
+        
+        
+    </div>
+</div>
+
+    </div>
+
+    <!-- Table of contents -->
+    <div class="d-none d-md-block col-md-2 bd-toc show">
+        
+        <div class="tocsection onthispage pt-5 pb-3">
+            <i class="fas fa-list"></i> Contents
+        </div>
+        <nav id="bd-toc-nav">
+            <ul class="nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#aes-refresher">
+   3.1. 1. AES Refresher
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#aes-internal">
+     3.1.1. 1.1
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       aes_internal()
+      </span>
+     </code>
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#aes-secret">
+   3.2. 1.2
+   <code class="docutils literal notranslate">
+    <span class="pre">
+     aes_secret()
+    </span>
+   </code>
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#aes-watcher">
+   3.3. 2. AES Watcher
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#generation-of-input-data">
+     3.3.1. 2.1 Generation of
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       input_data
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#definition-of-leaked-data">
+     3.3.2. 2.2 Definition of
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       leaked_data
+      </span>
+     </code>
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#aes-guesser">
+   3.4. 3. AES Guesser
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#num-same">
+     3.4.1. 3.1
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       num_same()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#guessing-loop">
+     3.4.2. 3.2 Guessing Loop
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#argsort-background">
+     3.4.3. 3.3
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       argsort
+      </span>
+     </code>
+     background
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#guessing-loop-with-sort">
+     3.4.4. 3.4 Guessing loop with sort
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#get-bit">
+     3.4.5. 3.5
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       get_bit()
+      </span>
+     </code>
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#bitwise-guessing-loop">
+     3.4.6. 3.6 Bitwise Guessing Loop
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#bonus-adding-noise-and-plotting-success-rates">
+   3.5. 4. Bonus: Adding Noise and Plotting Success Rates
+  </a>
+ </li>
+</ul>
+
+        </nav>
+        
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="part-3-topic-2-recovering-aes-key-from-a-single-bit-of-data">
+<h1><span class="section-number">3. </span>Part 3, Topic 2: Recovering AES Key from a Single Bit of Data<a class="headerlink" href="#part-3-topic-2-recovering-aes-key-from-a-single-bit-of-data" title="Permalink to this headline">¶</a></h1>
+<hr class="docutils" />
+<p>NOTE: This lab references some (commercial) training material on <a class="reference external" href="https://www.ChipWhisperer.io">ChipWhisperer.io</a>. You can freely execute and use the lab per the open-source license (including using it in your own courses if you distribute similarly), but you must maintain notice about this source location. Consider joining our training course to enjoy the full experience.</p>
+<hr class="docutils" />
+<p>Let’s do a basic demo to recover a single bit of data from an internal state of an AES implementation, and see how far we can take our attack.</p>
+<p><strong>SUMMARY:</strong> <em>This lab will take you through the associated information about how to recover an AES key from a single “bit” of leakage. We already saw how power analysis can be used to understand device leakage, but how does that mean we can recover cryptographic information?</em></p>
+<p><strong>LEARNING OUTCOMES:</strong></p>
+<ul class="simple">
+<li><p>Understand some basics of the AES algorithm.</p></li>
+<li><p>See how a single bit of leakage can translate to a full key reveal.</p></li>
+<li><p>See how to sort and ranking lists.</p></li>
+</ul>
+<div class="section" id="aes-refresher">
+<h2><span class="section-number">3.1. </span>1. AES Refresher<a class="headerlink" href="#aes-refresher" title="Permalink to this headline">¶</a></h2>
+<p>You’ll be an expert at AES (or recognizing AES figures) by the end of this course! Remember that the input data flow for AES is something like this:</p>
+<p><img alt="aes-input-sbox" src="img/aesinput.png" /></p>
+<p>Where the input data is XOR’d with a key byte, and then passed through an S-Box. First, let’s build our AES model. I’m going to make your life slightly easier by giving you the S-Box data:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sbox</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="c1"># 0    1    2    3    4    5    6    7    8    9    a    b    c    d    e    f </span>
+    <span class="mh">0x63</span><span class="p">,</span><span class="mh">0x7c</span><span class="p">,</span><span class="mh">0x77</span><span class="p">,</span><span class="mh">0x7b</span><span class="p">,</span><span class="mh">0xf2</span><span class="p">,</span><span class="mh">0x6b</span><span class="p">,</span><span class="mh">0x6f</span><span class="p">,</span><span class="mh">0xc5</span><span class="p">,</span><span class="mh">0x30</span><span class="p">,</span><span class="mh">0x01</span><span class="p">,</span><span class="mh">0x67</span><span class="p">,</span><span class="mh">0x2b</span><span class="p">,</span><span class="mh">0xfe</span><span class="p">,</span><span class="mh">0xd7</span><span class="p">,</span><span class="mh">0xab</span><span class="p">,</span><span class="mh">0x76</span><span class="p">,</span> <span class="c1"># 0</span>
+    <span class="mh">0xca</span><span class="p">,</span><span class="mh">0x82</span><span class="p">,</span><span class="mh">0xc9</span><span class="p">,</span><span class="mh">0x7d</span><span class="p">,</span><span class="mh">0xfa</span><span class="p">,</span><span class="mh">0x59</span><span class="p">,</span><span class="mh">0x47</span><span class="p">,</span><span class="mh">0xf0</span><span class="p">,</span><span class="mh">0xad</span><span class="p">,</span><span class="mh">0xd4</span><span class="p">,</span><span class="mh">0xa2</span><span class="p">,</span><span class="mh">0xaf</span><span class="p">,</span><span class="mh">0x9c</span><span class="p">,</span><span class="mh">0xa4</span><span class="p">,</span><span class="mh">0x72</span><span class="p">,</span><span class="mh">0xc0</span><span class="p">,</span> <span class="c1"># 1</span>
+    <span class="mh">0xb7</span><span class="p">,</span><span class="mh">0xfd</span><span class="p">,</span><span class="mh">0x93</span><span class="p">,</span><span class="mh">0x26</span><span class="p">,</span><span class="mh">0x36</span><span class="p">,</span><span class="mh">0x3f</span><span class="p">,</span><span class="mh">0xf7</span><span class="p">,</span><span class="mh">0xcc</span><span class="p">,</span><span class="mh">0x34</span><span class="p">,</span><span class="mh">0xa5</span><span class="p">,</span><span class="mh">0xe5</span><span class="p">,</span><span class="mh">0xf1</span><span class="p">,</span><span class="mh">0x71</span><span class="p">,</span><span class="mh">0xd8</span><span class="p">,</span><span class="mh">0x31</span><span class="p">,</span><span class="mh">0x15</span><span class="p">,</span> <span class="c1"># 2</span>
+    <span class="mh">0x04</span><span class="p">,</span><span class="mh">0xc7</span><span class="p">,</span><span class="mh">0x23</span><span class="p">,</span><span class="mh">0xc3</span><span class="p">,</span><span class="mh">0x18</span><span class="p">,</span><span class="mh">0x96</span><span class="p">,</span><span class="mh">0x05</span><span class="p">,</span><span class="mh">0x9a</span><span class="p">,</span><span class="mh">0x07</span><span class="p">,</span><span class="mh">0x12</span><span class="p">,</span><span class="mh">0x80</span><span class="p">,</span><span class="mh">0xe2</span><span class="p">,</span><span class="mh">0xeb</span><span class="p">,</span><span class="mh">0x27</span><span class="p">,</span><span class="mh">0xb2</span><span class="p">,</span><span class="mh">0x75</span><span class="p">,</span> <span class="c1"># 3</span>
+    <span class="mh">0x09</span><span class="p">,</span><span class="mh">0x83</span><span class="p">,</span><span class="mh">0x2c</span><span class="p">,</span><span class="mh">0x1a</span><span class="p">,</span><span class="mh">0x1b</span><span class="p">,</span><span class="mh">0x6e</span><span class="p">,</span><span class="mh">0x5a</span><span class="p">,</span><span class="mh">0xa0</span><span class="p">,</span><span class="mh">0x52</span><span class="p">,</span><span class="mh">0x3b</span><span class="p">,</span><span class="mh">0xd6</span><span class="p">,</span><span class="mh">0xb3</span><span class="p">,</span><span class="mh">0x29</span><span class="p">,</span><span class="mh">0xe3</span><span class="p">,</span><span class="mh">0x2f</span><span class="p">,</span><span class="mh">0x84</span><span class="p">,</span> <span class="c1"># 4</span>
+    <span class="mh">0x53</span><span class="p">,</span><span class="mh">0xd1</span><span class="p">,</span><span class="mh">0x00</span><span class="p">,</span><span class="mh">0xed</span><span class="p">,</span><span class="mh">0x20</span><span class="p">,</span><span class="mh">0xfc</span><span class="p">,</span><span class="mh">0xb1</span><span class="p">,</span><span class="mh">0x5b</span><span class="p">,</span><span class="mh">0x6a</span><span class="p">,</span><span class="mh">0xcb</span><span class="p">,</span><span class="mh">0xbe</span><span class="p">,</span><span class="mh">0x39</span><span class="p">,</span><span class="mh">0x4a</span><span class="p">,</span><span class="mh">0x4c</span><span class="p">,</span><span class="mh">0x58</span><span class="p">,</span><span class="mh">0xcf</span><span class="p">,</span> <span class="c1"># 5</span>
+    <span class="mh">0xd0</span><span class="p">,</span><span class="mh">0xef</span><span class="p">,</span><span class="mh">0xaa</span><span class="p">,</span><span class="mh">0xfb</span><span class="p">,</span><span class="mh">0x43</span><span class="p">,</span><span class="mh">0x4d</span><span class="p">,</span><span class="mh">0x33</span><span class="p">,</span><span class="mh">0x85</span><span class="p">,</span><span class="mh">0x45</span><span class="p">,</span><span class="mh">0xf9</span><span class="p">,</span><span class="mh">0x02</span><span class="p">,</span><span class="mh">0x7f</span><span class="p">,</span><span class="mh">0x50</span><span class="p">,</span><span class="mh">0x3c</span><span class="p">,</span><span class="mh">0x9f</span><span class="p">,</span><span class="mh">0xa8</span><span class="p">,</span> <span class="c1"># 6</span>
+    <span class="mh">0x51</span><span class="p">,</span><span class="mh">0xa3</span><span class="p">,</span><span class="mh">0x40</span><span class="p">,</span><span class="mh">0x8f</span><span class="p">,</span><span class="mh">0x92</span><span class="p">,</span><span class="mh">0x9d</span><span class="p">,</span><span class="mh">0x38</span><span class="p">,</span><span class="mh">0xf5</span><span class="p">,</span><span class="mh">0xbc</span><span class="p">,</span><span class="mh">0xb6</span><span class="p">,</span><span class="mh">0xda</span><span class="p">,</span><span class="mh">0x21</span><span class="p">,</span><span class="mh">0x10</span><span class="p">,</span><span class="mh">0xff</span><span class="p">,</span><span class="mh">0xf3</span><span class="p">,</span><span class="mh">0xd2</span><span class="p">,</span> <span class="c1"># 7</span>
+    <span class="mh">0xcd</span><span class="p">,</span><span class="mh">0x0c</span><span class="p">,</span><span class="mh">0x13</span><span class="p">,</span><span class="mh">0xec</span><span class="p">,</span><span class="mh">0x5f</span><span class="p">,</span><span class="mh">0x97</span><span class="p">,</span><span class="mh">0x44</span><span class="p">,</span><span class="mh">0x17</span><span class="p">,</span><span class="mh">0xc4</span><span class="p">,</span><span class="mh">0xa7</span><span class="p">,</span><span class="mh">0x7e</span><span class="p">,</span><span class="mh">0x3d</span><span class="p">,</span><span class="mh">0x64</span><span class="p">,</span><span class="mh">0x5d</span><span class="p">,</span><span class="mh">0x19</span><span class="p">,</span><span class="mh">0x73</span><span class="p">,</span> <span class="c1"># 8</span>
+    <span class="mh">0x60</span><span class="p">,</span><span class="mh">0x81</span><span class="p">,</span><span class="mh">0x4f</span><span class="p">,</span><span class="mh">0xdc</span><span class="p">,</span><span class="mh">0x22</span><span class="p">,</span><span class="mh">0x2a</span><span class="p">,</span><span class="mh">0x90</span><span class="p">,</span><span class="mh">0x88</span><span class="p">,</span><span class="mh">0x46</span><span class="p">,</span><span class="mh">0xee</span><span class="p">,</span><span class="mh">0xb8</span><span class="p">,</span><span class="mh">0x14</span><span class="p">,</span><span class="mh">0xde</span><span class="p">,</span><span class="mh">0x5e</span><span class="p">,</span><span class="mh">0x0b</span><span class="p">,</span><span class="mh">0xdb</span><span class="p">,</span> <span class="c1"># 9</span>
+    <span class="mh">0xe0</span><span class="p">,</span><span class="mh">0x32</span><span class="p">,</span><span class="mh">0x3a</span><span class="p">,</span><span class="mh">0x0a</span><span class="p">,</span><span class="mh">0x49</span><span class="p">,</span><span class="mh">0x06</span><span class="p">,</span><span class="mh">0x24</span><span class="p">,</span><span class="mh">0x5c</span><span class="p">,</span><span class="mh">0xc2</span><span class="p">,</span><span class="mh">0xd3</span><span class="p">,</span><span class="mh">0xac</span><span class="p">,</span><span class="mh">0x62</span><span class="p">,</span><span class="mh">0x91</span><span class="p">,</span><span class="mh">0x95</span><span class="p">,</span><span class="mh">0xe4</span><span class="p">,</span><span class="mh">0x79</span><span class="p">,</span> <span class="c1"># a</span>
+    <span class="mh">0xe7</span><span class="p">,</span><span class="mh">0xc8</span><span class="p">,</span><span class="mh">0x37</span><span class="p">,</span><span class="mh">0x6d</span><span class="p">,</span><span class="mh">0x8d</span><span class="p">,</span><span class="mh">0xd5</span><span class="p">,</span><span class="mh">0x4e</span><span class="p">,</span><span class="mh">0xa9</span><span class="p">,</span><span class="mh">0x6c</span><span class="p">,</span><span class="mh">0x56</span><span class="p">,</span><span class="mh">0xf4</span><span class="p">,</span><span class="mh">0xea</span><span class="p">,</span><span class="mh">0x65</span><span class="p">,</span><span class="mh">0x7a</span><span class="p">,</span><span class="mh">0xae</span><span class="p">,</span><span class="mh">0x08</span><span class="p">,</span> <span class="c1"># b</span>
+    <span class="mh">0xba</span><span class="p">,</span><span class="mh">0x78</span><span class="p">,</span><span class="mh">0x25</span><span class="p">,</span><span class="mh">0x2e</span><span class="p">,</span><span class="mh">0x1c</span><span class="p">,</span><span class="mh">0xa6</span><span class="p">,</span><span class="mh">0xb4</span><span class="p">,</span><span class="mh">0xc6</span><span class="p">,</span><span class="mh">0xe8</span><span class="p">,</span><span class="mh">0xdd</span><span class="p">,</span><span class="mh">0x74</span><span class="p">,</span><span class="mh">0x1f</span><span class="p">,</span><span class="mh">0x4b</span><span class="p">,</span><span class="mh">0xbd</span><span class="p">,</span><span class="mh">0x8b</span><span class="p">,</span><span class="mh">0x8a</span><span class="p">,</span> <span class="c1"># c</span>
+    <span class="mh">0x70</span><span class="p">,</span><span class="mh">0x3e</span><span class="p">,</span><span class="mh">0xb5</span><span class="p">,</span><span class="mh">0x66</span><span class="p">,</span><span class="mh">0x48</span><span class="p">,</span><span class="mh">0x03</span><span class="p">,</span><span class="mh">0xf6</span><span class="p">,</span><span class="mh">0x0e</span><span class="p">,</span><span class="mh">0x61</span><span class="p">,</span><span class="mh">0x35</span><span class="p">,</span><span class="mh">0x57</span><span class="p">,</span><span class="mh">0xb9</span><span class="p">,</span><span class="mh">0x86</span><span class="p">,</span><span class="mh">0xc1</span><span class="p">,</span><span class="mh">0x1d</span><span class="p">,</span><span class="mh">0x9e</span><span class="p">,</span> <span class="c1"># d</span>
+    <span class="mh">0xe1</span><span class="p">,</span><span class="mh">0xf8</span><span class="p">,</span><span class="mh">0x98</span><span class="p">,</span><span class="mh">0x11</span><span class="p">,</span><span class="mh">0x69</span><span class="p">,</span><span class="mh">0xd9</span><span class="p">,</span><span class="mh">0x8e</span><span class="p">,</span><span class="mh">0x94</span><span class="p">,</span><span class="mh">0x9b</span><span class="p">,</span><span class="mh">0x1e</span><span class="p">,</span><span class="mh">0x87</span><span class="p">,</span><span class="mh">0xe9</span><span class="p">,</span><span class="mh">0xce</span><span class="p">,</span><span class="mh">0x55</span><span class="p">,</span><span class="mh">0x28</span><span class="p">,</span><span class="mh">0xdf</span><span class="p">,</span> <span class="c1"># e</span>
+    <span class="mh">0x8c</span><span class="p">,</span><span class="mh">0xa1</span><span class="p">,</span><span class="mh">0x89</span><span class="p">,</span><span class="mh">0x0d</span><span class="p">,</span><span class="mh">0xbf</span><span class="p">,</span><span class="mh">0xe6</span><span class="p">,</span><span class="mh">0x42</span><span class="p">,</span><span class="mh">0x68</span><span class="p">,</span><span class="mh">0x41</span><span class="p">,</span><span class="mh">0x99</span><span class="p">,</span><span class="mh">0x2d</span><span class="p">,</span><span class="mh">0x0f</span><span class="p">,</span><span class="mh">0xb0</span><span class="p">,</span><span class="mh">0x54</span><span class="p">,</span><span class="mh">0xbb</span><span class="p">,</span><span class="mh">0x16</span>  <span class="c1"># f</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Alright - that should be enough for you to build a simple function that XORs a secret key value with the input data, and then performs a lookup in the above table. Before you continue, modify the following code block to implement the correct function:</p>
+<div class="section" id="aes-internal">
+<h3><span class="section-number">3.1.1. </span>1.1 <code class="docutils literal notranslate"><span class="pre">aes_internal()</span></code><a class="headerlink" href="#aes-internal" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>def aes_internal(inputdata, key):
+    return ???
+</pre></div>
+</div>
+</div>
+</div>
+<p>With that working - go ahead and run the following test vectors. If the values are not as expected, check your implementation. If the following executes without error, then go onto the next part.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Simple test vectors - if you get the check-mark printed all OK.</span>
+<span class="k">assert</span><span class="p">(</span><span class="n">aes_internal</span><span class="p">(</span><span class="mh">0xAB</span><span class="p">,</span> <span class="mh">0xEF</span><span class="p">)</span> <span class="o">==</span> <span class="mh">0x1B</span><span class="p">)</span>
+<span class="k">assert</span><span class="p">(</span><span class="n">aes_internal</span><span class="p">(</span><span class="mh">0x22</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">)</span> <span class="o">==</span> <span class="mh">0x26</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✔️ OK to continue!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Finally - we’ll make a new function which doesn’t expose the key. The following function has some hard-coded key. You can change this key byte if you’d like, and see it recovered at a later step!</p>
+</div>
+</div>
+<div class="section" id="aes-secret">
+<h2><span class="section-number">3.2. </span>1.2 <code class="docutils literal notranslate"><span class="pre">aes_secret()</span></code><a class="headerlink" href="#aes-secret" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">aes_secret</span><span class="p">(</span><span class="n">inputdata</span><span class="p">):</span>
+    <span class="n">secret_key</span> <span class="o">=</span> <span class="mh">0xEF</span>
+    <span class="k">return</span> <span class="n">aes_internal</span><span class="p">(</span><span class="n">secret_key</span><span class="p">,</span> <span class="n">inputdata</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>At this point, we can get the value of some internal part of the AES algorithm. For our first attack, we’re going to assume that we can’t observe this entire value. Let’s just observe a single bit of the value - imagine that someone put a probe down inside the chip to get this. We can do this by simply throwing away all the other data besides a single bit, and only expose that single bit to the observer.</p>
+<p>Let’s build the watcher now.</p>
+</div>
+<div class="section" id="aes-watcher">
+<h2><span class="section-number">3.3. </span>2. AES Watcher<a class="headerlink" href="#aes-watcher" title="Permalink to this headline">¶</a></h2>
+<p>The watcher is going to observe a single bit of data. We’ll need to build lists of input we feed to the algorithm (we’re just going to send in 1000 random bytes that get ‘encrypted’), as well as lists to hold our observation. In case you’re still picking up Python, here are a few handy little things you might need in this section:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">##Some Python hints/useful functions:</span>
+
+<span class="c1"># You can use this function to generate the random data</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+
+<span class="c1"># List comprehension can be used to shovel data through a function</span>
+<span class="k">def</span> <span class="nf">somefunc</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="mi">4</span>
+<span class="n">input_data</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">]</span>
+<span class="n">output_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">somefunc</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">input_data</span><span class="p">]</span>
+
+<span class="c1"># You can use this while ignoring the index variable too</span>
+<span class="n">output_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">somefunc</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">))</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Your first objective is to build a list of data you are encrypted with aes_secret(). This should be a 1000-item random number which ranges from 0 to 255. Call it <code class="docutils literal notranslate"><span class="pre">input_data</span></code>. For example if you print the <code class="docutils literal notranslate"><span class="pre">input_data</span></code> list it could look like <code class="docutils literal notranslate"><span class="pre">[2,</span> <span class="pre">49,</span> <span class="pre">0,</span> <span class="pre">212,</span> <span class="pre">94,</span> <span class="pre">255,</span> <span class="pre">...</span> <span class="pre">,</span> <span class="pre">7]</span></code>, where there are 1000 elements in total. Fill in the following code to make a list of the 1000 random values in the correct range (see hints above if you need some Python syntax).</p>
+<div class="section" id="generation-of-input-data">
+<h3><span class="section-number">3.3.1. </span>2.1 Generation of <code class="docutils literal notranslate"><span class="pre">input_data</span></code><a class="headerlink" href="#generation-of-input-data" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>input_data = ????
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Simple test vectors - if you get the check-mark printed all OK.</span>
+<span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">input_data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="k">assert</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">input_data</span><span class="p">)</span> <span class="o">==</span> <span class="mh">0xFF</span><span class="p">)</span> <span class="c1">#Possibly not true for random variables (re-run if you get an error)</span>
+<span class="k">assert</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">input_data</span><span class="p">)</span> <span class="o">==</span> <span class="mh">0x00</span><span class="p">)</span> <span class="c1">#Possibly not true for random variables (re-run if you get an error)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✔️ OK to continue!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now, feed all those inputs through the <code class="docutils literal notranslate"><span class="pre">aes_secret</span></code> function. Because this is a secret function we are only going to observe a single bit of output (the ‘leakage’). The following will perform the encryptions and mask off all but the lowest bit for you, and build a new array called <code class="docutils literal notranslate"><span class="pre">leaked_data</span></code> which contains just the 1 or 0 status of the lowest bit.</p>
+</div>
+<div class="section" id="definition-of-leaked-data">
+<h3><span class="section-number">3.3.2. </span>2.2 Definition of <code class="docutils literal notranslate"><span class="pre">leaked_data</span></code><a class="headerlink" href="#definition-of-leaked-data" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">leaked_data</span> <span class="o">=</span> <span class="p">[(</span><span class="n">aes_secret</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x01</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">input_data</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>If you run the following too cells, it will then print some of the data so you can see the sequence of 1 and 0.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">leaked_data</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>You can also plot for example the patterns of 1’s and 0’s - this gets pretty squashed, so let’s just look at a few hundred transitions:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pylab</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">leaked_data</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">200</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Do you think we’ll be able to get something useful out of this? Let’s attack it to find out.</p>
+</div>
+</div>
+<div class="section" id="aes-guesser">
+<h2><span class="section-number">3.4. </span>3. AES Guesser<a class="headerlink" href="#aes-guesser" title="Permalink to this headline">¶</a></h2>
+<p>The attack is pretty simple. Let’s just use our model of the device (we know what the encryption does after all, just not the secret key). And we’ll feed in the observed data for each possible value of the key. And then we can observe how many (if any) of the keys result in the observation and simulation matching each other. If the observation and simulation match, this suggets our simulation is running in the same “setup” as the implementation we are attacking!</p>
+<p>First, build a function to count the number of elements in a list that match between two lists (that is - same value of the element at the same list index). An easy way is to just iterate through the number of elements in the list and count the number that are the same. Fill in the following - there is already some bounds checking code to get you started.</p>
+<div class="section" id="num-same">
+<h3><span class="section-number">3.4.1. </span>3.1 <code class="docutils literal notranslate"><span class="pre">num_same()</span></code><a class="headerlink" href="#num-same" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">num_same</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Arrays must be same length!&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">max</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">max</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Arrays max() should be the same!&quot;</span><span class="p">)</span>
+    
+    <span class="c1">#Count how many list items match up</span>
+    <span class="o">???</span>
+    
+    <span class="k">return</span> <span class="n">same</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Simple test vectors - if you get the check-mark printed all OK.</span>
+<span class="k">assert</span><span class="p">(</span><span class="n">num_same</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">8</span><span class="p">)</span>
+<span class="k">assert</span><span class="p">(</span><span class="n">num_same</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span>
+<span class="k">assert</span><span class="p">(</span><span class="n">num_same</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✔️ OK to continue!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The next block is the most important. You’ll need to “apply” the leakage function - that is for each known input byte, pass it through the <code class="docutils literal notranslate"><span class="pre">aes_internal(input_data,</span> <span class="pre">key_guess)</span></code> function. The value of <code class="docutils literal notranslate"><span class="pre">key_guess</span></code> is just integers in <code class="docutils literal notranslate"><span class="pre">[0x00,</span> <span class="pre">0x01,...,0xFF]</span></code> - aka every possible value of the key byte. We’ll compare the number of matching bits between our observed (leaked) data bit and the hypothetical data bit.</p>
+</div>
+<div class="section" id="guessing-loop">
+<h3><span class="section-number">3.4.2. </span>3.2 Guessing Loop<a class="headerlink" href="#guessing-loop" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>for guess in range(0, 256):   
+    
+    #Get a hypothetical leakage list - use aes_internal(guess, input_byte) and mask off to only get value of lowest bit
+    hypothetical_leakage = ???
+    
+    #Use our function
+    same_count = num_same(hypothetical_leakage, leaked_data)   
+    
+    #Print for debug
+    print(&quot;Guess {:02X}: {:4d} bits same&quot;.format(guess, same_count))
+</pre></div>
+</div>
+</div>
+</div>
+<p>If your key guess is wrong, about half of the guesses should be wrong. Looking through the list, you’ll see that most of the “bits same” numbers will be around 500. But scroll down to the correct key value (should be <code class="docutils literal notranslate"><span class="pre">0xEF</span></code> if you haven’t changed it earlier). With any luck, that number should be fully correct - 1000 matching bits. This is only possible if the internal “secret key” byte matches the observed key.</p>
+</div>
+<div class="section" id="argsort-background">
+<h3><span class="section-number">3.4.3. </span>3.3 <code class="docutils literal notranslate"><span class="pre">argsort</span></code> background<a class="headerlink" href="#argsort-background" title="Permalink to this headline">¶</a></h3>
+<p>Now a handy thing to do will be to sort based on the values by number of correct bits so we don’t have to look through that list. An easy way to do this is with <code class="docutils literal notranslate"><span class="pre">numpy.argsort</span></code> - this returns the indicies that would sort the list. To start small, take the following for example:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">count_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+
+<span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">count_list</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>This should return <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">3,</span> <span class="pre">4,</span> <span class="pre">1,</span> <span class="pre">2]</span></code> - you can cast the above to <code class="docutils literal notranslate"><span class="pre">list()</span></code> type if you want to get rid of the <code class="docutils literal notranslate"><span class="pre">array()</span></code> type around it.</p>
+<p>Inspecting the above, notice that this is the position of each from lowest to highest. We can reverse this to give us a highest to lowest sort instead:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">count_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+
+<span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">count_list</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Taking your previous code, simply make a new list which contains the number of elements which are the same, where the list index is the <em>key guess</em>. As a rough outline, see the following (you’ll need to add back in your hypothetical code):</p>
+</div>
+<div class="section" id="guessing-loop-with-sort">
+<h3><span class="section-number">3.4.4. </span>3.4 Guessing loop with sort<a class="headerlink" href="#guessing-loop-with-sort" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>import numpy as np
+
+guess_list = [0] * 256
+
+for guess in range(0, 256):   
+    
+    #Get a hypothetical leakage list - use aes_internal(guess, input_byte) and mask off to only get value of lowest bit
+    hypothetical_leakage = ???
+    
+    #Use our function
+    same_count = num_same(hypothetical_leakage, leaked_data)   
+    
+    #Track the number of correct bits
+    guess_list[guess] = same_count
+
+#Use np.argsort to generate a list of indicies from low to high, then [::-1] to reverse the list to get high to low.
+sorted_list = ???
+
+#Print top 5 only
+for guess in sorted_list[0:5]:
+        print(&quot;Key Guess {:02X} = {:04d} matches&quot;.format(guess, guess_list[guess]))
+</pre></div>
+</div>
+</div>
+</div>
+<p>In this case we know that bit ‘0’ was the leakage. What if we didn’t know that? Imagine putting our needle down onto the internal bus, but we aren’t sure what bit we touched.</p>
+<p>Luckily we can easily test that. To do so, we’ll need to adjust our leakage function to take in a bit number that is leaking. First, define a function which returns the value of a bit being 1 or 0:</p>
+</div>
+<div class="section" id="get-bit">
+<h3><span class="section-number">3.4.5. </span>3.5 <code class="docutils literal notranslate"><span class="pre">get_bit()</span></code><a class="headerlink" href="#get-bit" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_bit</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">bit</span><span class="p">):</span>
+    <span class="o">????</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">assert</span><span class="p">(</span><span class="n">get_bit</span><span class="p">(</span><span class="mh">0xAA</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">assert</span><span class="p">(</span><span class="n">get_bit</span><span class="p">(</span><span class="mh">0xAA</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+<span class="k">assert</span><span class="p">(</span><span class="n">get_bit</span><span class="p">(</span><span class="mh">0x00</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✔️ OK to continue!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now let’s make a slightly fancier leakage function with it:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">aes_leakage_guess</span><span class="p">(</span><span class="n">keyguess</span><span class="p">,</span> <span class="n">inputdata</span><span class="p">,</span> <span class="n">bit</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">get_bit</span><span class="p">(</span><span class="n">aes_internal</span><span class="p">(</span><span class="n">keyguess</span><span class="p">,</span> <span class="n">inputdata</span><span class="p">),</span> <span class="n">bit</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">assert</span><span class="p">(</span><span class="n">aes_leakage_guess</span><span class="p">(</span><span class="mh">0xAB</span><span class="p">,</span> <span class="mh">0x22</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+<span class="k">assert</span><span class="p">(</span><span class="n">aes_leakage_guess</span><span class="p">(</span><span class="mh">0xAB</span><span class="p">,</span> <span class="mh">0x22</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+<span class="k">assert</span><span class="p">(</span><span class="n">aes_leakage_guess</span><span class="p">(</span><span class="mh">0xAB</span><span class="p">,</span> <span class="mh">0x22</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">assert</span><span class="p">(</span><span class="n">aes_leakage_guess</span><span class="p">(</span><span class="mh">0xAB</span><span class="p">,</span> <span class="mh">0x22</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">assert</span><span class="p">(</span><span class="n">aes_leakage_guess</span><span class="p">(</span><span class="mh">0xAB</span><span class="p">,</span> <span class="mh">0x22</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✔️ OK to continue!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Finally, finish off this loop by adding your leakage function into it. Running the loop should print results for each bit option - hopefully you see that only the matching bit shows the full number of matches. If you want to try a different leaky bit, you’ll then need to go back up to the actual secret observation to make the leak happen from a different bit. But you can see the following code makes no assumptions about ‘bit 0’ being the leaky one - it will work with any other bit leaking now.</p>
+</div>
+<div class="section" id="bitwise-guessing-loop">
+<h3><span class="section-number">3.4.6. </span>3.6 Bitwise Guessing Loop<a class="headerlink" href="#bitwise-guessing-loop" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>for bit_guess in range(0, 8):
+    guess_list = [0] * 256
+    print(&quot;Checking bit {:d}&quot;.format(bit_guess))
+    for guess in range(0, 256):
+
+        #Get a hypothetical leakage for guessed bit (ensure returns 1/0 only)
+        #Use bit_guess as the bit number, guess as the key guess, and data from input_data
+        hypothetical_leakage = ???
+
+        #Use our function
+        same_count = num_same(hypothetical_leakage, leaked_data)   
+
+        #Track the number of correct bits
+        guess_list[guess] = same_count
+
+    sorted_list = np.argsort(guess_list)[::-1]
+
+    #Print top 5 only
+    for guess in sorted_list[0:5]:
+            print(&quot;Key Guess {:02X} = {:04d} matches&quot;.format(guess, guess_list[guess]))
+</pre></div>
+</div>
+</div>
+</div>
+<p>🥳🥳🥳🥳🥳🥳🥳🥳🥳🥳🥳🥳🥳
+Congrats - you did it!!!!</p>
+<p>This all assumed you get some way to observe the value of the bit - in our next act, we’ll see how power analysis gives us the ability to observe a given bit.</p>
+</div>
+</div>
+<div class="section" id="bonus-adding-noise-and-plotting-success-rates">
+<h2><span class="section-number">3.5. </span>4. Bonus: Adding Noise and Plotting Success Rates<a class="headerlink" href="#bonus-adding-noise-and-plotting-success-rates" title="Permalink to this headline">¶</a></h2>
+<p>Are you not satisified by your attack? Why not see what happens when you add some noise into the equation?</p>
+<p>Remember this simple leakage from earlier:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="n">leaked_data</span> <span class="o">=</span> <span class="p">[(</span><span class="n">aes_secret</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0x01</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">input_data</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>This relied on another function <code class="docutils literal notranslate"><span class="pre">aes_secret()</span></code>, which we could define as such to return incorrect responses sometimes:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>    <span class="kn">import</span> <span class="nn">random</span>
+    <span class="k">def</span> <span class="nf">aes_secret</span><span class="p">(</span><span class="n">inputdata</span><span class="p">):</span>
+        <span class="n">secret_key</span> <span class="o">=</span> <span class="mh">0xEF</span>
+        <span class="n">correct</span> <span class="o">=</span> <span class="n">aes_internal</span><span class="p">(</span><span class="n">secret_key</span><span class="p">,</span> <span class="n">inputdata</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">correct</span>
+        <span class="k">else</span>
+            <span class="k">return</span> <span class="mi">0</span> 
+        
+</pre></div>
+</div>
+<p>What happens now? While it should take more guesses to get the correct byte out. In fact, we could even make a plot of the percentage of returned wrong results, and how many observations it took to get the correct answer.</p>
+<p>The end result should look something like this:</p>
+<img src="img/traces_wrong.png" alt="Noisy Observations" width="450"/>
+<p>Give it a try. If you get stuck of course you can check out the solution lab too - this one is a little trickier, we really threw you in the deep end here. Don’t feel bad looking for a ⛑️.</p>
+<p>You’ll notice the data is pretty noisy too. You might want to average several attempts. And you can also set the leakage to be a tiny amount of information only - it will require more observations to recover the data, but the data is fundamentally there still.</p>
+<hr class="docutils" />
+<p><small>NO-FUN DISCLAIMER: This material is Copyright (C) NewAE Technology Inc., 2015-2020. ChipWhisperer is a trademark of NewAE Technology Inc., claimed in all jurisdictions, and registered in at least the United States of America, European Union, and Peoples Republic of China.</p>
+<p>Tutorials derived from our open-source work must be released under the associated open-source license, and notice of the source must be <em>clearly displayed</em>. Only original copyright holders may license or authorize other distribution - while NewAE Technology Inc. holds the copyright for many tutorials, the github repository includes community contributions which we cannot license under special terms and <strong>must</strong> be maintained as an open-source release. Please contact us for special permissions (where possible).</p>
+<p>THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</small></p>
+</div>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+        </div>
+    </div>
+    
+    
+    <div class='prev-next-bottom'>
+        
+    <a class='left-prev' id="prev-link" href="courses_sca101_SOLN_Lab 3_1 - Large Hamming Weight Swings-OPENADC-CWLITEARM.html" title="previous page"><span class="section-number">2. </span>Part 3, Topic 1: Large Hamming Weight Swings (MAIN)</a>
+
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By The Jupyter Book community<br/>
+        
+            &copy; Copyright 2020.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+
+    
+  <script src="_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    
+  </body>
+</html>
